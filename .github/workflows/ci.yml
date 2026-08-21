@@ -23,7 +23,5 @@ jobs:
           pip install -r requirements/train.txt
 
       - name: Run unit tests
-        env:
-          PYTHONPATH: .
         run: |
-          pytest tests/
+          python -m pytest tests/
