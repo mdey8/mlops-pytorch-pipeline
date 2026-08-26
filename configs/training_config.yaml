@@ -1,15 +1,15 @@
 model:
-  num_classes: 10
   in_channels: 1
+  num_classes: 10
 
 training:
   batch_size: 64
   learning_rate: 0.001
-  epochs: 5
-  seed: 42
+  epochs: 10
+  patience: 3
   save_dir: "models"
   model_filename: "model.pt"
 
 dataset:
-  dataset_name: "MNIST"
+  name: "FashionMNIST"
   data_dir: "./data"
