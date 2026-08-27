@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: training-job
+  namespace: ml-training
+spec:
+  template:
+    metadata:
+      labels:
+        app: model-training
+    spec:
+      restartPolicy: Never
+      
+      # Comment out GPU node requirements for local execution:
+      # nodeSelector:
+      #   accelerator: nvidia-gpu
+      # tolerations:
+      #   - key: "nvidia.com/gpu"
+      #     operator: "Exists"
+      #     effect: "NoSchedule"
+
+      containers:
+        - name: trainer
+          image: mlops-train:v1
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "1"
+              memory: "1Gi"
+              # nvidia.com/gpu: "1"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+              # nvidia.com/gpu: "1"
+
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/configs
+            - name: data-pvc-volume
+              mountPath: /app/data
+            - name: checkpoints-pvc-volume
+              mountPath: /app/checkpoints
+
+      volumes:
+        - name: config-volume
+          configMap:
+            name: training-config
+        - name: data-pvc-volume
+          persistentVolumeClaim:
+            claimName: data-pvc
+        - name: checkpoints-pvc-volume
+          persistentVolumeClaim:
+            claimName: checkpoints-pvc
