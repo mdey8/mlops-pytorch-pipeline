@@ -1,0 +1,9 @@
+﻿fastapi
+uvicorn
+pillow
+torch
+pydantic
+pyyaml
+python-multipart
+numpy
+torchvision

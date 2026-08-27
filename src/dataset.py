@@ -1,17 +1,52 @@
-import torchvision.transforms as transforms
-from torchvision.datasets import MNIST
+import torch
 from torch.utils.data import DataLoader
+from torchvision import datasets, transforms
 
-def get_dataloaders(data_dir: str = "./data", batch_size: int = 64):
-    transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize((0.1307,), (0.3081,))
-    ])
 
-    train_dataset = MNIST(root=data_dir, train=True, download=True, transform=transform)
-    test_dataset = MNIST(root=data_dir, train=False, download=True, transform=transform)
+def get_transforms(train=True):
+    """Returns torchvision image transformation pipeline.
 
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+    Args:
+        train (bool): If True, applies training augmentations. If False,
+          applies evaluation transforms.
+    """
+    if train:
+        return transforms.Compose(
+            [
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+                transforms.Normalize((0.5,), (0.5,)),
+            ]
+        )
+    else:
+        return transforms.Compose(
+            [
+                transforms.ToTensor(),
+                transforms.Normalize((0.5,), (0.5,)),
+            ]
+        )
 
-    return train_loader, test_loader
+
+def get_dataloaders(
+    data_dir="./data", batch_size=64, dataset_name="FashionMNIST"
+):
+    """Downloads dataset and constructs train/val PyTorch DataLoaders."""
+    dataset_cls = getattr(datasets, dataset_name, datasets.FashionMNIST)
+
+    train_dataset = dataset_cls(
+        root=data_dir, train=True, download=True, transform=get_transforms(train=True)
+    )
+
+    val_dataset = dataset_cls(
+        root=data_dir,
+        train=False,
+        download=True,
+        transform=get_transforms(train=False),
+    )
+
+    train_loader = DataLoader(
+        train_dataset, batch_size=batch_size, shuffle=True
+    )
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+
+    return train_loader, val_loader
