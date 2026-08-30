@@ -11,7 +11,7 @@ spec:
     spec:
       restartPolicy: Never
       
-      # Comment out GPU node requirements for local execution:
+      # Commenting out GPU node requirements for local execution:
       # nodeSelector:
       #   accelerator: nvidia-gpu
       # tolerations:
